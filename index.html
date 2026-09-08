@@ -1,25 +1,42 @@
 <!DOCTYPE html>
+
 <html lang="id">
+
 <head>
+
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-  <title>DAHAGA POS - Scanner Barcode</title>
+>
+
+  <title>SYSTEM POS - Scanner Barcode</title>
+
+  <!-- HTML5 QR Code Scanner -->
 
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
 
+    /* =====================================================
+       RESET
+    ===================================================== */
+
     * {
       box-sizing: border-box;
     }
 
+
+    /* =====================================================
+       BODY
+    ===================================================== */
+
     body {
+
       margin: 0;
+
       min-height: 100vh;
 
       font-family:
@@ -34,21 +51,30 @@
           #6b4226
         );
 
-      color: #fff;
+      color: #3b2418;
 
       display: flex;
+
       justify-content: center;
+
       align-items: center;
 
       padding: 20px;
+
     }
 
+
+    /* =====================================================
+       CONTAINER
+    ===================================================== */
+
     .scanner-container {
+
       width: 100%;
+
       max-width: 520px;
 
       background: #f8f1e8;
-      color: #3b2418;
 
       border-radius: 20px;
 
@@ -56,32 +82,56 @@
 
       box-shadow:
         0 15px 40px
-        rgba(0,0,0,0.35);
+        rgba(0, 0, 0, 0.35);
+
     }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
 
     .header {
+
       text-align: center;
+
       margin-bottom: 18px;
+
     }
 
-    .logo {
-      font-size: 34px;
-      margin-bottom: 5px;
-    }
 
     .title {
-      font-size: 24px;
+
+      font-size: 26px;
+
       font-weight: bold;
+
+      letter-spacing: 0.5px;
+
+      color: #3b2418;
+
     }
+
 
     .subtitle {
+
       font-size: 14px;
+
       color: #806957;
-      margin-top: 5px;
+
+      margin-top: 6px;
+
     }
 
+
+    /* =====================================================
+       SCANNER
+    ===================================================== */
+
     #reader {
+
       width: 100%;
+
       overflow: hidden;
 
       border-radius: 15px;
@@ -89,44 +139,110 @@
       background: #111;
 
       margin-top: 15px;
+
+      min-height: 280px;
+
     }
+
+
+    /*
+      Memastikan elemen video scanner
+      mengikuti ukuran container.
+    */
+
+    #reader video {
+
+      width: 100% !important;
+
+      height: auto !important;
+
+      border-radius: 15px;
+
+      object-fit: cover;
+
+    }
+
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
 
     .buttons {
+
       display: flex;
+
       gap: 10px;
+
       margin-top: 15px;
+
     }
 
+
     button {
+
       flex: 1;
 
       border: none;
+
       border-radius: 10px;
 
       padding: 14px;
 
       font-size: 16px;
+
       font-weight: bold;
 
       cursor: pointer;
+
+      transition:
+        opacity 0.2s ease,
+        transform 0.1s ease;
+
     }
+
+
+    button:active {
+
+      transform: scale(0.98);
+
+    }
+
 
     .btn-start {
+
       background: #6b4226;
-      color: white;
+
+      color: #fff;
+
     }
+
 
     .btn-stop {
+
       background: #ddd;
+
       color: #3b2418;
+
     }
+
 
     button:disabled {
+
       opacity: 0.5;
+
       cursor: not-allowed;
+
+      transform: none;
+
     }
 
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
+
     .status {
+
       margin-top: 15px;
 
       padding: 12px;
@@ -142,11 +258,22 @@
       min-height: 44px;
 
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
+      line-height: 1.4;
+
     }
 
+
+    /* =====================================================
+       RESULT
+    ===================================================== */
+
     .result {
+
       margin-top: 12px;
 
       padding: 14px;
@@ -158,23 +285,42 @@
       border: 1px solid #d5c2ad;
 
       text-align: center;
+
     }
+
 
     .result-label {
+
       font-size: 12px;
+
       color: #806957;
+
+      letter-spacing: 0.5px;
+
     }
 
+
     .result-value {
+
       margin-top: 5px;
 
       font-size: 24px;
+
       font-weight: bold;
 
       word-break: break-all;
+
+      color: #3b2418;
+
     }
 
+
+    /* =====================================================
+       INFO
+    ===================================================== */
+
     .info {
+
       margin-top: 15px;
 
       font-size: 12px;
@@ -184,89 +330,167 @@
       text-align: center;
 
       color: #806957;
+
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 480px) {
+
+      body {
+
+        padding: 10px;
+
+      }
+
+
+      .scanner-container {
+
+        padding: 16px;
+
+        border-radius: 16px;
+
+      }
+
+
+      .title {
+
+        font-size: 23px;
+
+      }
+
+
+      .buttons {
+
+        flex-direction: column;
+
+      }
+
+
+      button {
+
+        width: 100%;
+
+      }
+
     }
 
   </style>
+
 </head>
 
 <body>
 
   <div class="scanner-container">
 
-    <div class="header">
+```
+<!-- =================================================
+     HEADER
+================================================= -->
 
-      <div class="logo">
-        ?
-      </div>
+<div class="header">
 
-      <div class="title">
-        DAHAGA POS
-      </div>
+  <div class="title">
+    SYSTEM POS
+  </div>
 
-      <div class="subtitle">
-        Scanner Barcode Menu
-      </div>
+  <div class="subtitle">
+    Scanner Barcode Menu
+  </div>
 
-    </div>
+</div>
 
-    <div id="reader"></div>
 
-    <div class="buttons">
+<!-- =================================================
+     SCANNER AREA
+================================================= -->
 
-      <button
-        id="btnStart"
-        class="btn-start"
-        onclick="mulaiScan()"
-      >
-        ?? MULAI SCAN
-      </button>
+<div id="reader"></div>
 
-      <button
-        id="btnStop"
-        class="btn-stop"
-        onclick="berhentiScan()"
-        disabled
-      >
-        ? STOP
-      </button>
 
-    </div>
+<!-- =================================================
+     BUTTONS
+================================================= -->
 
-    <div
-      id="status"
-      class="status"
-    >
-      Tekan "MULAI SCAN" untuk menggunakan kamera.
-    </div>
+<div class="buttons">
 
-    <div class="result">
+  <button
+    id="btnStart"
+    class="btn-start"
+    onclick="mulaiScan()"
+  >
+    MULAI SCAN
+  </button>
 
-      <div class="result-label">
-        BARCODE TERBACA
-      </div>
 
-      <div
-        id="hasil"
-        class="result-value"
-      >
-        -
-      </div>
+  <button
+    id="btnStop"
+    class="btn-stop"
+    onclick="berhentiScan()"
+    disabled
+  >
+    STOP
+  </button>
 
-    </div>
+</div>
 
-    <div class="info">
 
-      Arahkan kamera ke barcode menu Dahaga POS.
-      <br>
-      Setelah barcode terbaca, hasil akan dikirim
-      kembali ke halaman Kasir.
+<!-- =================================================
+     STATUS
+================================================= -->
 
-    </div>
+<div
+  id="status"
+  class="status"
+>
+  Tekan "MULAI SCAN" untuk menggunakan kamera.
+</div>
 
+
+<!-- =================================================
+     RESULT
+================================================= -->
+
+<div class="result">
+
+  <div class="result-label">
+    BARCODE TERBACA
   </div>
 
 
+  <div
+    id="hasil"
+    class="result-value"
+  >
+    -
+  </div>
+
+</div>
+
+
+<!-- =================================================
+     INFORMATION
+================================================= -->
+
+<div class="info">
+
+  Arahkan kamera ke barcode menu SYSTEM POS.
+
+  <br>
+
+  Setelah barcode terbaca, hasil akan dikirim
+  kembali ke halaman Kasir.
+
+</div>
+```
+
+  </div>
+
 <script>
+
 
   /* =====================================================
      PARAMETER DARI DAHAGA POS
@@ -277,15 +501,29 @@
       window.location.search
     );
 
+
+  /*
+    URL asal yang menerima hasil barcode.
+
+    Contoh:
+    ?targetOrigin=https://script.google.com
+  */
+
   const targetOrigin =
     params.get("targetOrigin") || "*";
+
+
+  /*
+    Session dari halaman Kasir.
+  */
 
   const sessionId =
     params.get("session") || "";
 
 
+
   /* =====================================================
-     SCANNER
+     VARIABEL SCANNER
   ===================================================== */
 
   let html5QrCode = null;
@@ -295,33 +533,69 @@
   let barcodeSudahTerbaca = false;
 
 
+
+  /* =====================================================
+     ELEMENT
+  ===================================================== */
+
+  const statusElement =
+    document.getElementById("status");
+
+  const hasilElement =
+    document.getElementById("hasil");
+
+  const btnStart =
+    document.getElementById("btnStart");
+
+  const btnStop =
+    document.getElementById("btnStop");
+
+
+
   /* =====================================================
      MULAI SCAN
   ===================================================== */
 
   async function mulaiScan() {
 
+
+    /*
+      Jangan menjalankan scanner
+      jika scanner sudah aktif.
+    */
+
     if (sedangScan) {
+
       return;
+
     }
+
 
     barcodeSudahTerbaca = false;
 
-    const status =
-      document.getElementById("status");
 
-    const btnStart =
-      document.getElementById("btnStart");
+    /*
+      Bersihkan hasil sebelumnya.
+    */
 
-    const btnStop =
-      document.getElementById("btnStop");
+    hasilElement.textContent = "-";
+
+
+    /*
+      Status awal.
+    */
+
+    statusElement.textContent =
+      "Meminta izin kamera...";
 
 
     try {
 
-      status.textContent =
-        "?? Meminta izin kamera...";
 
+      /*
+        Buat object scanner
+        jika belum tersedia.
+      */
 
       if (!html5QrCode) {
 
@@ -331,32 +605,61 @@
       }
 
 
+      /*
+        Konfigurasi scanner.
+      */
+
       const config = {
 
         fps: 10,
 
-        qrbox: function(
-          viewfinderWidth,
-          viewfinderHeight
-        ) {
 
-          const ukuran =
-            Math.min(
-              viewfinderWidth,
-              viewfinderHeight
-            ) * 0.70;
+        /*
+          Area scan 70% dari ukuran
+          kamera yang tersedia.
+        */
 
-          return {
-            width: ukuran,
-            height: ukuran
-          };
+        qrbox:
+          function(
+            viewfinderWidth,
+            viewfinderHeight
+          ) {
 
-        },
+            const ukuran =
+              Math.min(
+                viewfinderWidth,
+                viewfinderHeight
+              ) * 0.70;
 
-        aspectRatio: 1.0
+
+            return {
+
+              width: ukuran,
+
+              height: ukuran
+
+            };
+
+          },
+
+
+        aspectRatio: 1.0,
+
+
+        /*
+          Meminta kamera belakang
+          jika browser mendukung.
+        */
+
+        disableFlip: false
 
       };
 
+
+
+      /* =================================================
+         START CAMERA
+      ================================================= */
 
       await html5QrCode.start(
 
@@ -373,31 +676,54 @@
       );
 
 
+
+      /* =================================================
+         UPDATE STATUS
+      ================================================= */
+
       sedangScan = true;
 
       btnStart.disabled = true;
 
       btnStop.disabled = false;
 
-      status.textContent =
-        "?? Kamera aktif. Arahkan ke barcode menu.";
+
+      statusElement.textContent =
+        "Kamera aktif. Arahkan ke barcode menu.";
+
 
     }
 
+
     catch (error) {
+
 
       console.error(
         "Gagal membuka kamera:",
         error
       );
 
-      status.textContent =
-        "? Kamera tidak dapat digunakan.";
+
+      sedangScan = false;
+
+      btnStart.disabled = false;
+
+      btnStop.disabled = true;
+
+
+      statusElement.textContent =
+        "Kamera tidak dapat digunakan.";
+
+
+      /*
+        Tampilkan informasi error.
+      */
 
       alert(
+
         "Kamera tidak dapat digunakan.\n\n" +
 
-        "Pastikan:\n" +
+        "Pastikan:\n\n" +
 
         "1. Browser mengizinkan kamera.\n" +
 
@@ -408,40 +734,57 @@
         "Detail:\n" +
 
         error
+
       );
-
-      sedangScan = false;
-
-      btnStart.disabled = false;
-
-      btnStop.disabled = true;
 
     }
 
   }
 
 
+
   /* =====================================================
-     BARCODE TERBACA
+     BARCODE BERHASIL TERBACA
   ===================================================== */
 
   async function ketikaBarcodeTerbaca(
+
     decodedText,
+
     decodedResult
+
   ) {
 
+
+    /*
+      Mencegah barcode yang sama
+      diproses berkali-kali.
+    */
+
     if (barcodeSudahTerbaca) {
+
       return;
+
     }
+
 
     barcodeSudahTerbaca = true;
 
+
+    /*
+      Bersihkan barcode.
+    */
 
     const barcode =
       String(
         decodedText || ""
       ).trim();
 
+
+    /*
+      Jika kosong, izinkan scanner
+      membaca kembali.
+    */
 
     if (!barcode) {
 
@@ -458,75 +801,115 @@
     );
 
 
-    document.getElementById(
-      "hasil"
-    ).textContent = barcode;
+    /*
+      Tampilkan barcode.
+    */
+
+    hasilElement.textContent =
+      barcode;
 
 
-    document.getElementById(
-      "status"
-    ).textContent =
-      "? Barcode berhasil dibaca.";
+    statusElement.textContent =
+      "Barcode berhasil dibaca.";
+
 
 
     /* =================================================
-       KIRIM KE HALAMAN KASIR
+       KIRIM HASIL KE HALAMAN KASIR
     ================================================= */
 
     try {
 
+
+      /*
+        Pastikan halaman Kasir
+        masih membuka scanner.
+      */
+
       if (
+
         window.opener &&
+
         !window.opener.closed
+
       ) {
+
 
         window.opener.postMessage(
 
           {
+
             source:
               "DAHAGA_BARCODE_SCANNER",
+
 
             type:
               "BARCODE_RESULT",
 
+
             barcode:
               barcode,
 
+
             session:
               sessionId,
+
 
             waktu:
               Date.now()
 
           },
 
+
           targetOrigin
 
         );
 
-      } else {
+
+        console.log(
+          "Barcode berhasil dikirim ke Kasir."
+        );
+
+
+      }
+
+
+      else {
+
 
         alert(
+
           "Halaman Kasir tidak ditemukan.\n\n" +
+
           "Silakan buka scanner dari tombol SCAN di Kasir."
+
         );
 
       }
 
+
     }
 
+
     catch (error) {
+
 
       console.error(
         "Gagal mengirim barcode:",
         error
       );
 
+
       alert(
-        "Barcode berhasil dibaca, tetapi gagal dikirim ke Kasir."
+
+        "Barcode berhasil dibaca, " +
+
+        "tetapi gagal dikirim ke Kasir."
+
       );
 
     }
+
 
 
     /* =================================================
@@ -536,11 +919,13 @@
     await berhentiScan();
 
 
+
     /* =================================================
-       TUTUP TAB SCANNER
+       TUTUP SCANNER
     ================================================= */
 
     setTimeout(
+
       function() {
 
         try {
@@ -567,21 +952,28 @@
   }
 
 
+
   /* =====================================================
      ERROR SCAN
   ===================================================== */
 
   function ketikaScanGagal(
+
     errorMessage
+
   ) {
 
+
     /*
-      Jangan tampilkan error setiap frame
-      karena scanner memang akan terus mencoba
-      membaca barcode.
+      Tidak menampilkan error
+      setiap frame.
+
+      Scanner memang akan terus mencoba
+      membaca barcode sampai berhasil.
     */
 
   }
+
 
 
   /* =====================================================
@@ -590,38 +982,49 @@
 
   async function berhentiScan() {
 
-    const btnStart =
-      document.getElementById("btnStart");
 
-    const btnStop =
-      document.getElementById("btnStop");
-
-    const status =
-      document.getElementById("status");
-
+    /*
+      Jika scanner sedang aktif,
+      hentikan kamera.
+    */
 
     if (
+
       html5QrCode &&
+
       sedangScan
+
     ) {
+
 
       try {
 
+
         await html5QrCode.stop();
+
 
       }
 
+
       catch (error) {
 
+
         console.error(
+
           "Gagal menghentikan scanner:",
+
           error
+
         );
 
       }
 
     }
 
+
+    /*
+      Update status scanner.
+    */
 
     sedangScan = false;
 
@@ -630,9 +1033,14 @@
     btnStop.disabled = true;
 
 
+    /*
+      Jangan mengganti status
+      jika barcode baru saja terbaca.
+    */
+
     if (!barcodeSudahTerbaca) {
 
-      status.textContent =
+      statusElement.textContent =
         "Scanner dihentikan.";
 
     }
@@ -640,7 +1048,46 @@
   }
 
 
+
+  /* =====================================================
+     CLEANUP SAAT HALAMAN DITUTUP
+  ===================================================== */
+
+  window.addEventListener(
+    "beforeunload",
+    async function() {
+
+      if (
+
+        html5QrCode &&
+
+        sedangScan
+
+      ) {
+
+        try {
+
+          await html5QrCode.stop();
+
+        }
+
+        catch (error) {
+
+          console.log(
+            "Cleanup scanner:",
+            error
+          );
+
+        }
+
+      }
+
+    }
+  );
+
+
 </script>
 
 </body>
+
 </html>
