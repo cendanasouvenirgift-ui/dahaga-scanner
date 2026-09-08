@@ -12,11 +12,15 @@ content="width=device-width, initial-scale=1.0"
 
 >
 
-  <title>SYSTEM POS - Scanner Barcode</title>
+  <title>DAHAGA POS - Scanner Barcode</title>
 
-  <!-- HTML5 QR Code Scanner -->
+  <!--
+    HTML5 QR Code
+  -->
 
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script
+    src="https://unpkg.com/html5-qrcode"
+  ></script>
 
   <style>
 
@@ -33,9 +37,21 @@ content="width=device-width, initial-scale=1.0"
        BODY
     ===================================================== */
 
+    html,
     body {
 
+      width: 100%;
+
+      min-height: 100%;
+
       margin: 0;
+
+      padding: 0;
+
+    }
+
+
+    body {
 
       min-height: 100vh;
 
@@ -106,33 +122,37 @@ content="width=device-width, initial-scale=1.0"
 
       font-weight: bold;
 
-      letter-spacing: 0.5px;
-
       color: #3b2418;
+
+      letter-spacing: 0.5px;
 
     }
 
 
     .subtitle {
 
+      margin-top: 6px;
+
       font-size: 14px;
 
       color: #806957;
-
-      margin-top: 6px;
 
     }
 
 
     /* =====================================================
-       SCANNER
+       READER
     ===================================================== */
 
     #reader {
 
       width: 100%;
 
+      min-height: 280px;
+
       overflow: hidden;
+
+      position: relative;
 
       border-radius: 15px;
 
@@ -140,31 +160,52 @@ content="width=device-width, initial-scale=1.0"
 
       margin-top: 15px;
 
-      min-height: 280px;
+    }
+
+
+    /*
+      Jangan menggunakan height:auto pada video.
+      Beberapa browser dapat menyebabkan preview hitam.
+    */
+
+    #reader video {
+
+      display: block;
+
+      width: 100% !important;
+
+      max-width: 100% !important;
+
+      border-radius: 15px;
 
     }
 
 
     /*
-      Memastikan elemen video scanner
-      mengikuti ukuran container.
+      Canvas hasil scanner.
     */
 
-    #reader video {
+    #reader canvas {
 
-      width: 100% !important;
+      max-width: 100% !important;
 
-      height: auto !important;
+    }
 
-      border-radius: 15px;
 
-      object-fit: cover;
+    /*
+      Hilangkan beberapa elemen bawaan
+      yang tidak diperlukan.
+    */
+
+    #reader img {
+
+      max-width: 100%;
 
     }
 
 
     /* =====================================================
-       BUTTONS
+       BUTTON
     ===================================================== */
 
     .buttons {
@@ -195,8 +236,8 @@ content="width=device-width, initial-scale=1.0"
       cursor: pointer;
 
       transition:
-        opacity 0.2s ease,
-        transform 0.1s ease;
+        transform 0.1s ease,
+        opacity 0.2s ease;
 
     }
 
@@ -238,6 +279,53 @@ content="width=device-width, initial-scale=1.0"
 
 
     /* =====================================================
+       CAMERA SELECT
+    ===================================================== */
+
+    .camera-box {
+
+      display: none;
+
+      margin-top: 12px;
+
+    }
+
+
+    .camera-label {
+
+      display: block;
+
+      margin-bottom: 6px;
+
+      font-size: 12px;
+
+      font-weight: bold;
+
+      color: #806957;
+
+    }
+
+
+    #cameraSelect {
+
+      width: 100%;
+
+      padding: 11px;
+
+      border-radius: 9px;
+
+      border: 1px solid #d5c2ad;
+
+      background: #fff;
+
+      color: #3b2418;
+
+      font-size: 14px;
+
+    }
+
+
+    /* =====================================================
        STATUS
     ===================================================== */
 
@@ -255,6 +343,8 @@ content="width=device-width, initial-scale=1.0"
 
       font-size: 14px;
 
+      line-height: 1.4;
+
       min-height: 44px;
 
       display: flex;
@@ -262,8 +352,6 @@ content="width=device-width, initial-scale=1.0"
       align-items: center;
 
       justify-content: center;
-
-      line-height: 1.4;
 
     }
 
@@ -308,9 +396,9 @@ content="width=device-width, initial-scale=1.0"
 
       font-weight: bold;
 
-      word-break: break-all;
-
       color: #3b2418;
+
+      word-break: break-all;
 
     }
 
@@ -394,7 +482,7 @@ content="width=device-width, initial-scale=1.0"
 <div class="header">
 
   <div class="title">
-    SYSTEM POS
+    DAHAGA POS
   </div>
 
   <div class="subtitle">
@@ -405,10 +493,37 @@ content="width=device-width, initial-scale=1.0"
 
 
 <!-- =================================================
-     SCANNER AREA
+     CAMERA READER
 ================================================= -->
 
 <div id="reader"></div>
+
+
+<!-- =================================================
+     CAMERA SELECT
+================================================= -->
+
+<div
+  id="cameraBox"
+  class="camera-box"
+>
+
+  <label
+    class="camera-label"
+    for="cameraSelect"
+  >
+    PILIH KAMERA
+  </label>
+
+
+  <select
+    id="cameraSelect"
+    onchange="gantiKamera()"
+  >
+
+  </select>
+
+</div>
 
 
 <!-- =================================================
@@ -472,12 +587,12 @@ content="width=device-width, initial-scale=1.0"
 
 
 <!-- =================================================
-     INFORMATION
+     INFO
 ================================================= -->
 
 <div class="info">
 
-  Arahkan kamera ke barcode menu SYSTEM POS.
+  Arahkan kamera ke barcode menu Dahaga POS.
 
   <br>
 
@@ -503,10 +618,7 @@ content="width=device-width, initial-scale=1.0"
 
 
   /*
-    URL asal yang menerima hasil barcode.
-
-    Contoh:
-    ?targetOrigin=https://script.google.com
+    Origin tujuan untuk postMessage.
   */
 
   const targetOrigin =
@@ -523,7 +635,36 @@ content="width=device-width, initial-scale=1.0"
 
 
   /* =====================================================
-     VARIABEL SCANNER
+     ELEMENT
+  ===================================================== */
+
+  const statusElement =
+    document.getElementById("status");
+
+
+  const hasilElement =
+    document.getElementById("hasil");
+
+
+  const btnStart =
+    document.getElementById("btnStart");
+
+
+  const btnStop =
+    document.getElementById("btnStop");
+
+
+  const cameraBox =
+    document.getElementById("cameraBox");
+
+
+  const cameraSelect =
+    document.getElementById("cameraSelect");
+
+
+
+  /* =====================================================
+     VARIABEL
   ===================================================== */
 
   let html5QrCode = null;
@@ -532,23 +673,236 @@ content="width=device-width, initial-scale=1.0"
 
   let barcodeSudahTerbaca = false;
 
+  let cameras = [];
+
+  let cameraIdAktif = null;
+
 
 
   /* =====================================================
-     ELEMENT
+     HELPER STATUS
   ===================================================== */
 
-  const statusElement =
-    document.getElementById("status");
+  function setStatus(pesan) {
 
-  const hasilElement =
-    document.getElementById("hasil");
+    statusElement.textContent =
+      pesan;
 
-  const btnStart =
-    document.getElementById("btnStart");
+  }
 
-  const btnStop =
-    document.getElementById("btnStop");
+
+
+  /* =====================================================
+     MENCARI KAMERA
+  ===================================================== */
+
+  async function ambilDaftarKamera() {
+
+    try {
+
+      setStatus(
+        "Meminta izin kamera..."
+      );
+
+
+      /*
+        Meminta izin kamera terlebih dahulu.
+
+        getUserMedia diperlukan agar browser
+        memberikan label kamera pada beberapa
+        perangkat.
+      */
+
+      const stream =
+        await navigator.mediaDevices.getUserMedia(
+          {
+            video: true,
+            audio: false
+          }
+        );
+
+
+      /*
+        Setelah izin diberikan,
+        hentikan stream sementara.
+
+        HTML5 QR Code akan membuka kamera
+        kembali saat scanner dimulai.
+      */
+
+      stream
+        .getTracks()
+        .forEach(
+          function(track) {
+
+            track.stop();
+
+          }
+        );
+
+
+      /*
+        Ambil daftar kamera.
+      */
+
+      cameras =
+        await Html5Qrcode.getCameras();
+
+
+      if (
+        !cameras ||
+        cameras.length === 0
+      ) {
+
+        throw new Error(
+          "Kamera tidak ditemukan."
+        );
+
+      }
+
+
+      /*
+        Bersihkan dropdown.
+      */
+
+      cameraSelect.innerHTML = "";
+
+
+      /*
+        Tambahkan semua kamera.
+      */
+
+      cameras.forEach(
+
+        function(camera, index) {
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+
+          option.value =
+            camera.id;
+
+
+          option.textContent =
+            camera.label ||
+            "Kamera " + (index + 1);
+
+
+          cameraSelect.appendChild(
+            option
+          );
+
+        }
+
+      );
+
+
+      /*
+        Cari kamera belakang.
+
+        Biasanya label kamera berisi:
+        - back
+        - rear
+        - environment
+        - belakang
+      */
+
+      const kameraBelakang =
+        cameras.find(
+
+          function(camera) {
+
+            const label =
+              String(
+                camera.label || ""
+              ).toLowerCase();
+
+
+            return (
+
+              label.includes("back") ||
+
+              label.includes("rear") ||
+
+              label.includes("environment") ||
+
+              label.includes("belakang")
+
+            );
+
+          }
+
+        );
+
+
+      /*
+        Pilih kamera belakang
+        jika ditemukan.
+
+        Jika tidak ditemukan,
+        gunakan kamera pertama.
+      */
+
+      if (kameraBelakang) {
+
+        cameraIdAktif =
+          kameraBelakang.id;
+
+      }
+
+      else {
+
+        cameraIdAktif =
+          cameras[0].id;
+
+      }
+
+
+      cameraSelect.value =
+        cameraIdAktif;
+
+
+      /*
+        Tampilkan pilihan kamera
+        jika terdapat lebih dari satu.
+      */
+
+      if (cameras.length > 1) {
+
+        cameraBox.style.display =
+          "block";
+
+      }
+
+      else {
+
+        cameraBox.style.display =
+          "none";
+
+      }
+
+
+      return cameraIdAktif;
+
+    }
+
+
+    catch (error) {
+
+      console.error(
+        "Gagal mendapatkan kamera:",
+        error
+      );
+
+
+      throw error;
+
+    }
+
+  }
 
 
 
@@ -559,11 +913,6 @@ content="width=device-width, initial-scale=1.0"
   async function mulaiScan() {
 
 
-    /*
-      Jangan menjalankan scanner
-      jika scanner sudah aktif.
-    */
-
     if (sedangScan) {
 
       return;
@@ -573,51 +922,76 @@ content="width=device-width, initial-scale=1.0"
 
     barcodeSudahTerbaca = false;
 
-
-    /*
-      Bersihkan hasil sebelumnya.
-    */
-
     hasilElement.textContent = "-";
 
 
-    /*
-      Status awal.
-    */
+    btnStart.disabled = true;
 
-    statusElement.textContent =
-      "Meminta izin kamera...";
+    btnStop.disabled = true;
 
 
     try {
 
 
       /*
-        Buat object scanner
-        jika belum tersedia.
+        Pastikan library tersedia.
       */
 
-      if (!html5QrCode) {
+      if (
+        typeof Html5Qrcode ===
+        "undefined"
+      ) {
 
-        html5QrCode =
-          new Html5Qrcode("reader");
+        throw new Error(
+          "Library scanner tidak berhasil dimuat."
+        );
 
       }
 
 
       /*
+        Buat instance scanner
+        jika belum ada.
+      */
+
+      if (!html5QrCode) {
+
+        html5QrCode =
+          new Html5Qrcode(
+            "reader"
+          );
+
+      }
+
+
+      /*
+        Cari kamera.
+      */
+
+      const cameraId =
+        await ambilDaftarKamera();
+
+
+      cameraIdAktif =
+        cameraId;
+
+
+      setStatus(
+        "Menyalakan kamera..."
+      );
+
+
+      /*
         Konfigurasi scanner.
+
+        qrbox menggunakan ukuran relatif
+        terhadap preview kamera.
       */
 
       const config = {
 
         fps: 10,
 
-
-        /*
-          Area scan 70% dari ukuran
-          kamera yang tersedia.
-        */
 
         qrbox:
           function(
@@ -626,17 +1000,23 @@ content="width=device-width, initial-scale=1.0"
           ) {
 
             const ukuran =
-              Math.min(
-                viewfinderWidth,
-                viewfinderHeight
-              ) * 0.70;
+              Math.floor(
+
+                Math.min(
+                  viewfinderWidth,
+                  viewfinderHeight
+                ) * 0.70
+
+              );
 
 
             return {
 
-              width: ukuran,
+              width:
+                ukuran,
 
-              height: ukuran
+              height:
+                ukuran
 
             };
 
@@ -646,26 +1026,21 @@ content="width=device-width, initial-scale=1.0"
         aspectRatio: 1.0,
 
 
-        /*
-          Meminta kamera belakang
-          jika browser mendukung.
-        */
-
         disableFlip: false
 
       };
 
 
+      /*
+        Mulai kamera menggunakan cameraId.
 
-      /* =================================================
-         START CAMERA
-      ================================================= */
+        Ini lebih stabil dibanding langsung
+        menggunakan facingMode.
+      */
 
       await html5QrCode.start(
 
-        {
-          facingMode: "environment"
-        },
+        cameraIdAktif,
 
         config,
 
@@ -676,10 +1051,9 @@ content="width=device-width, initial-scale=1.0"
       );
 
 
-
-      /* =================================================
-         UPDATE STATUS
-      ================================================= */
+      /*
+        Scanner berhasil aktif.
+      */
 
       sedangScan = true;
 
@@ -688,8 +1062,9 @@ content="width=device-width, initial-scale=1.0"
       btnStop.disabled = false;
 
 
-      statusElement.textContent =
-        "Kamera aktif. Arahkan ke barcode menu.";
+      setStatus(
+        "Kamera aktif. Arahkan ke barcode menu."
+      );
 
 
     }
@@ -711,29 +1086,48 @@ content="width=device-width, initial-scale=1.0"
       btnStop.disabled = true;
 
 
-      statusElement.textContent =
+      let pesan =
         "Kamera tidak dapat digunakan.";
 
 
       /*
-        Tampilkan informasi error.
+        Informasi error yang lebih
+        mudah dipahami.
       */
+
+      if (
+        error &&
+        error.message
+      ) {
+
+        pesan =
+          error.message;
+
+      }
+
+
+      setStatus(
+        "Kamera gagal dibuka."
+      );
+
 
       alert(
 
         "Kamera tidak dapat digunakan.\n\n" +
 
-        "Pastikan:\n\n" +
+        "Periksa hal berikut:\n\n" +
 
-        "1. Browser mengizinkan kamera.\n" +
+        "1. Izinkan akses kamera pada browser.\n" +
 
-        "2. Scanner dibuka melalui HTTPS.\n" +
+        "2. Pastikan scanner dibuka melalui HTTPS.\n" +
 
-        "3. Kamera tidak sedang digunakan aplikasi lain.\n\n" +
+        "3. Pastikan kamera tidak sedang digunakan aplikasi lain.\n" +
+
+        "4. Jika menggunakan HP, gunakan browser Chrome.\n\n" +
 
         "Detail:\n" +
 
-        error
+        pesan
 
       );
 
@@ -744,7 +1138,151 @@ content="width=device-width, initial-scale=1.0"
 
 
   /* =====================================================
-     BARCODE BERHASIL TERBACA
+     GANTI KAMERA
+  ===================================================== */
+
+  async function gantiKamera() {
+
+
+    const cameraIdBaru =
+      cameraSelect.value;
+
+
+    if (!cameraIdBaru) {
+
+      return;
+
+    }
+
+
+    cameraIdAktif =
+      cameraIdBaru;
+
+
+    /*
+      Jika scanner sedang berjalan,
+      hentikan lalu mulai menggunakan
+      kamera baru.
+    */
+
+    if (sedangScan) {
+
+
+      try {
+
+
+        await html5QrCode.stop();
+
+
+      }
+
+
+      catch (error) {
+
+
+        console.error(
+          "Gagal menghentikan kamera:",
+          error
+        );
+
+      }
+
+
+      sedangScan = false;
+
+
+      try {
+
+        const config = {
+
+          fps: 10,
+
+          qrbox:
+            function(
+              viewfinderWidth,
+              viewfinderHeight
+            ) {
+
+              const ukuran =
+                Math.floor(
+
+                  Math.min(
+                    viewfinderWidth,
+                    viewfinderHeight
+                  ) * 0.70
+
+                );
+
+
+              return {
+
+                width:
+                  ukuran,
+
+                height:
+                  ukuran
+
+              };
+
+            },
+
+          aspectRatio: 1.0,
+
+          disableFlip: false
+
+        };
+
+
+        await html5QrCode.start(
+
+          cameraIdAktif,
+
+          config,
+
+          ketikaBarcodeTerbaca,
+
+          ketikaScanGagal
+
+        );
+
+
+        sedangScan = true;
+
+
+        setStatus(
+          "Kamera berhasil diganti."
+        );
+
+
+      }
+
+
+      catch (error) {
+
+
+        console.error(
+          "Gagal mengganti kamera:",
+          error
+        );
+
+
+        sedangScan = false;
+
+
+        setStatus(
+          "Gagal mengganti kamera."
+        );
+
+      }
+
+    }
+
+  }
+
+
+
+  /* =====================================================
+     BARCODE TERBACA
   ===================================================== */
 
   async function ketikaBarcodeTerbaca(
@@ -757,8 +1295,8 @@ content="width=device-width, initial-scale=1.0"
 
 
     /*
-      Mencegah barcode yang sama
-      diproses berkali-kali.
+      Mencegah barcode diproses
+      berkali-kali.
     */
 
     if (barcodeSudahTerbaca) {
@@ -772,7 +1310,7 @@ content="width=device-width, initial-scale=1.0"
 
 
     /*
-      Bersihkan barcode.
+      Bersihkan hasil barcode.
     */
 
     const barcode =
@@ -782,8 +1320,8 @@ content="width=device-width, initial-scale=1.0"
 
 
     /*
-      Jika kosong, izinkan scanner
-      membaca kembali.
+      Jika barcode kosong,
+      izinkan scanner mencoba lagi.
     */
 
     if (!barcode) {
@@ -802,29 +1340,25 @@ content="width=device-width, initial-scale=1.0"
 
 
     /*
-      Tampilkan barcode.
+      Tampilkan hasil.
     */
 
     hasilElement.textContent =
       barcode;
 
 
-    statusElement.textContent =
-      "Barcode berhasil dibaca.";
+    setStatus(
+      "Barcode berhasil dibaca."
+    );
 
 
 
     /* =================================================
-       KIRIM HASIL KE HALAMAN KASIR
+       KIRIM KE HALAMAN KASIR
     ================================================= */
 
     try {
 
-
-      /*
-        Pastikan halaman Kasir
-        masih membuka scanner.
-      */
 
       if (
 
@@ -887,7 +1421,6 @@ content="width=device-width, initial-scale=1.0"
 
       }
 
-
     }
 
 
@@ -902,7 +1435,7 @@ content="width=device-width, initial-scale=1.0"
 
       alert(
 
-        "Barcode berhasil dibaca, " +
+        "Barcode berhasil dibaca,\n" +
 
         "tetapi gagal dikirim ke Kasir."
 
@@ -921,7 +1454,7 @@ content="width=device-width, initial-scale=1.0"
 
 
     /* =================================================
-       TUTUP SCANNER
+       TUTUP WINDOW
     ================================================= */
 
     setTimeout(
@@ -963,13 +1496,11 @@ content="width=device-width, initial-scale=1.0"
 
   ) {
 
-
     /*
-      Tidak menampilkan error
-      setiap frame.
+      Jangan mengubah status setiap frame.
 
       Scanner memang akan terus mencoba
-      membaca barcode sampai berhasil.
+      membaca barcode.
     */
 
   }
@@ -982,11 +1513,6 @@ content="width=device-width, initial-scale=1.0"
 
   async function berhentiScan() {
 
-
-    /*
-      Jika scanner sedang aktif,
-      hentikan kamera.
-    */
 
     if (
 
@@ -1010,11 +1536,8 @@ content="width=device-width, initial-scale=1.0"
 
 
         console.error(
-
           "Gagal menghentikan scanner:",
-
           error
-
         );
 
       }
@@ -1022,26 +1545,19 @@ content="width=device-width, initial-scale=1.0"
     }
 
 
-    /*
-      Update status scanner.
-    */
-
     sedangScan = false;
+
 
     btnStart.disabled = false;
 
     btnStop.disabled = true;
 
 
-    /*
-      Jangan mengganti status
-      jika barcode baru saja terbaca.
-    */
-
     if (!barcodeSudahTerbaca) {
 
-      statusElement.textContent =
-        "Scanner dihentikan.";
+      setStatus(
+        "Scanner dihentikan."
+      );
 
     }
 
@@ -1050,12 +1566,15 @@ content="width=device-width, initial-scale=1.0"
 
 
   /* =====================================================
-     CLEANUP SAAT HALAMAN DITUTUP
+     CLEANUP
   ===================================================== */
 
   window.addEventListener(
+
     "beforeunload",
-    async function() {
+
+    function() {
+
 
       if (
 
@@ -1065,24 +1584,26 @@ content="width=device-width, initial-scale=1.0"
 
       ) {
 
-        try {
 
-          await html5QrCode.stop();
+        html5QrCode
+          .stop()
+          .catch(
 
-        }
+            function(error) {
 
-        catch (error) {
+              console.log(
+                "Cleanup scanner:",
+                error
+              );
 
-          console.log(
-            "Cleanup scanner:",
-            error
+            }
+
           );
-
-        }
 
       }
 
     }
+
   );
 
 
