@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>DAHAGA POS - Scanner Barcode</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background:
+        linear-gradient(
+          135deg,
+          #3b2418,
+          #6b4226
+        );
+
+      color: #fff;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      padding: 20px;
+    }
+
+    .scanner-container {
+      width: 100%;
+      max-width: 520px;
+
+      background: #f8f1e8;
+      color: #3b2418;
+
+      border-radius: 20px;
+
+      padding: 22px;
+
+      box-shadow:
+        0 15px 40px
+        rgba(0,0,0,0.35);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      font-size: 34px;
+      margin-bottom: 5px;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #806957;
+      margin-top: 5px;
+    }
+
+    #reader {
+      width: 100%;
+      overflow: hidden;
+
+      border-radius: 15px;
+
+      background: #111;
+
+      margin-top: 15px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+
+      border: none;
+      border-radius: 10px;
+
+      padding: 14px;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .btn-start {
+      background: #6b4226;
+      color: white;
+    }
+
+    .btn-stop {
+      background: #ddd;
+      color: #3b2418;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 15px;
+
+      padding: 12px;
+
+      border-radius: 10px;
+
+      background: #eadcc9;
+
+      text-align: center;
+
+      font-size: 14px;
+
+      min-height: 44px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result {
+      margin-top: 12px;
+
+      padding: 14px;
+
+      border-radius: 10px;
+
+      background: #fff;
+
+      border: 1px solid #d5c2ad;
+
+      text-align: center;
+    }
+
+    .result-label {
+      font-size: 12px;
+      color: #806957;
+    }
+
+    .result-value {
+      margin-top: 5px;
+
+      font-size: 24px;
+      font-weight: bold;
+
+      word-break: break-all;
+    }
+
+    .info {
+      margin-top: 15px;
+
+      font-size: 12px;
+
+      line-height: 1.5;
+
+      text-align: center;
+
+      color: #806957;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="scanner-container">
+
+    <div class="header">
+
+      <div class="logo">
+        ?
+      </div>
+
+      <div class="title">
+        DAHAGA POS
+      </div>
+
+      <div class="subtitle">
+        Scanner Barcode Menu
+      </div>
+
+    </div>
+
+    <div id="reader"></div>
+
+    <div class="buttons">
+
+      <button
+        id="btnStart"
+        class="btn-start"
+        onclick="mulaiScan()"
+      >
+        ?? MULAI SCAN
+      </button>
+
+      <button
+        id="btnStop"
+        class="btn-stop"
+        onclick="berhentiScan()"
+        disabled
+      >
+        ? STOP
+      </button>
+
+    </div>
+
+    <div
+      id="status"
+      class="status"
+    >
+      Tekan "MULAI SCAN" untuk menggunakan kamera.
+    </div>
+
+    <div class="result">
+
+      <div class="result-label">
+        BARCODE TERBACA
+      </div>
+
+      <div
+        id="hasil"
+        class="result-value"
+      >
+        -
+      </div>
+
+    </div>
+
+    <div class="info">
+
+      Arahkan kamera ke barcode menu Dahaga POS.
+      <br>
+      Setelah barcode terbaca, hasil akan dikirim
+      kembali ke halaman Kasir.
+
+    </div>
+
+  </div>
+
+
+<script>
+
+  /* =====================================================
+     PARAMETER DARI DAHAGA POS
+  ===================================================== */
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const targetOrigin =
+    params.get("targetOrigin") || "*";
+
+  const sessionId =
+    params.get("session") || "";
+
+
+  /* =====================================================
+     SCANNER
+  ===================================================== */
+
+  let html5QrCode = null;
+
+  let sedangScan = false;
+
+  let barcodeSudahTerbaca = false;
+
+
+  /* =====================================================
+     MULAI SCAN
+  ===================================================== */
+
+  async function mulaiScan() {
+
+    if (sedangScan) {
+      return;
+    }
+
+    barcodeSudahTerbaca = false;
+
+    const status =
+      document.getElementById("status");
+
+    const btnStart =
+      document.getElementById("btnStart");
+
+    const btnStop =
+      document.getElementById("btnStop");
+
+
+    try {
+
+      status.textContent =
+        "?? Meminta izin kamera...";
+
+
+      if (!html5QrCode) {
+
+        html5QrCode =
+          new Html5Qrcode("reader");
+
+      }
+
+
+      const config = {
+
+        fps: 10,
+
+        qrbox: function(
+          viewfinderWidth,
+          viewfinderHeight
+        ) {
+
+          const ukuran =
+            Math.min(
+              viewfinderWidth,
+              viewfinderHeight
+            ) * 0.70;
+
+          return {
+            width: ukuran,
+            height: ukuran
+          };
+
+        },
+
+        aspectRatio: 1.0
+
+      };
+
+
+      await html5QrCode.start(
+
+        {
+          facingMode: "environment"
+        },
+
+        config,
+
+        ketikaBarcodeTerbaca,
+
+        ketikaScanGagal
+
+      );
+
+
+      sedangScan = true;
+
+      btnStart.disabled = true;
+
+      btnStop.disabled = false;
+
+      status.textContent =
+        "?? Kamera aktif. Arahkan ke barcode menu.";
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Gagal membuka kamera:",
+        error
+      );
+
+      status.textContent =
+        "? Kamera tidak dapat digunakan.";
+
+      alert(
+        "Kamera tidak dapat digunakan.\n\n" +
+
+        "Pastikan:\n" +
+
+        "1. Browser mengizinkan kamera.\n" +
+
+        "2. Scanner dibuka melalui HTTPS.\n" +
+
+        "3. Kamera tidak sedang digunakan aplikasi lain.\n\n" +
+
+        "Detail:\n" +
+
+        error
+      );
+
+      sedangScan = false;
+
+      btnStart.disabled = false;
+
+      btnStop.disabled = true;
+
+    }
+
+  }
+
+
+  /* =====================================================
+     BARCODE TERBACA
+  ===================================================== */
+
+  async function ketikaBarcodeTerbaca(
+    decodedText,
+    decodedResult
+  ) {
+
+    if (barcodeSudahTerbaca) {
+      return;
+    }
+
+    barcodeSudahTerbaca = true;
+
+
+    const barcode =
+      String(
+        decodedText || ""
+      ).trim();
+
+
+    if (!barcode) {
+
+      barcodeSudahTerbaca = false;
+
+      return;
+
+    }
+
+
+    console.log(
+      "Barcode terbaca:",
+      barcode
+    );
+
+
+    document.getElementById(
+      "hasil"
+    ).textContent = barcode;
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "? Barcode berhasil dibaca.";
+
+
+    /* =================================================
+       KIRIM KE HALAMAN KASIR
+    ================================================= */
+
+    try {
+
+      if (
+        window.opener &&
+        !window.opener.closed
+      ) {
+
+        window.opener.postMessage(
+
+          {
+            source:
+              "DAHAGA_BARCODE_SCANNER",
+
+            type:
+              "BARCODE_RESULT",
+
+            barcode:
+              barcode,
+
+            session:
+              sessionId,
+
+            waktu:
+              Date.now()
+
+          },
+
+          targetOrigin
+
+        );
+
+      } else {
+
+        alert(
+          "Halaman Kasir tidak ditemukan.\n\n" +
+          "Silakan buka scanner dari tombol SCAN di Kasir."
+        );
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Gagal mengirim barcode:",
+        error
+      );
+
+      alert(
+        "Barcode berhasil dibaca, tetapi gagal dikirim ke Kasir."
+      );
+
+    }
+
+
+    /* =================================================
+       STOP CAMERA
+    ================================================= */
+
+    await berhentiScan();
+
+
+    /* =================================================
+       TUTUP TAB SCANNER
+    ================================================= */
+
+    setTimeout(
+      function() {
+
+        try {
+
+          window.close();
+
+        }
+
+        catch (error) {
+
+          console.log(
+            "Window close:",
+            error
+          );
+
+        }
+
+      },
+
+      700
+
+    );
+
+  }
+
+
+  /* =====================================================
+     ERROR SCAN
+  ===================================================== */
+
+  function ketikaScanGagal(
+    errorMessage
+  ) {
+
+    /*
+      Jangan tampilkan error setiap frame
+      karena scanner memang akan terus mencoba
+      membaca barcode.
+    */
+
+  }
+
+
+  /* =====================================================
+     STOP SCANNER
+  ===================================================== */
+
+  async function berhentiScan() {
+
+    const btnStart =
+      document.getElementById("btnStart");
+
+    const btnStop =
+      document.getElementById("btnStop");
+
+    const status =
+      document.getElementById("status");
+
+
+    if (
+      html5QrCode &&
+      sedangScan
+    ) {
+
+      try {
+
+        await html5QrCode.stop();
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "Gagal menghentikan scanner:",
+          error
+        );
+
+      }
+
+    }
+
+
+    sedangScan = false;
+
+    btnStart.disabled = false;
+
+    btnStop.disabled = true;
+
+
+    if (!barcodeSudahTerbaca) {
+
+      status.textContent =
+        "Scanner dihentikan.";
+
+    }
+
+  }
+
+
+</script>
+
+</body>
+</html>
